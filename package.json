@@ -1,0 +1,69 @@
+{
+  "name": "doc-extract-agent",
+  "version": "0.1.0",
+  "description": "Self-hostable, type-safe document extraction agent: turn invoices (PDF & images) into validated structured data with Claude. Built for reliability with typed errors, retries/backoff, and a human-in-the-loop-ready data model.",
+  "type": "module",
+  "license": "MIT",
+  "author": "takuyahoritacromtech",
+  "keywords": [
+    "document-extraction",
+    "invoice",
+    "ocr",
+    "llm",
+    "anthropic",
+    "claude",
+    "automation",
+    "typescript"
+  ],
+  "engines": {
+    "node": ">=18.18"
+  },
+  "bin": {
+    "doc-extract": "dist/cli/index.js"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/cli/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "check": "npm run typecheck && npm run lint && npm run test"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.105.0",
+    "commander": "^13.1.0",
+    "pino": "^10.3.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@types/node": "^26.0.0",
+    "@vitest/coverage-v8": "^4.1.9",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.4",
+    "tsup": "^8.5.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1",
+    "vitest": "^3.2.6"
+  }
+}
