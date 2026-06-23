@@ -19,7 +19,17 @@ export function makeInvoice(overrides: Partial<Invoice> = {}): Invoice {
 export function makeEnvelope(overrides: Partial<ExtractionEnvelope> = {}): ExtractionEnvelope {
   return {
     invoice: makeInvoice(),
-    fieldConfidence: { vendorName: 0.98, invoiceNumber: 0.97, totalAmount: 0.95 },
+    fieldConfidence: {
+      vendorName: 0.98,
+      invoiceNumber: 0.97,
+      issueDate: 0.95,
+      dueDate: 0.93,
+      currency: 0.99,
+      lineItems: 0.94,
+      subtotal: 0.95,
+      taxAmount: 0.93,
+      totalAmount: 0.96,
+    },
     overallConfidence: 0.96,
     notes: null,
     ...overrides,

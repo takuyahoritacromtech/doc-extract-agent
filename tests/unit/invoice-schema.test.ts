@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ExtractionEnvelopeSchema } from '../../src/domain/documents/invoice';
-import { makeEnvelope } from '../fixtures/invoices';
+import { makeEnvelope, makeInvoice } from '../fixtures/invoices';
 
 describe('ExtractionEnvelopeSchema', () => {
   it('accepts a well-formed envelope', () => {
@@ -23,5 +23,15 @@ describe('ExtractionEnvelopeSchema', () => {
   it('rejects confidence values outside 0..1', () => {
     const result = ExtractionEnvelopeSchema.safeParse(makeEnvelope({ overallConfidence: 1.5 }));
     expect(result.success).toBe(false);
+  });
+
+  it('enforces ISO date and ISO-4217 currency formats', () => {
+    expect(
+      ExtractionEnvelopeSchema.safeParse(makeEnvelope({ invoice: makeInvoice({ issueDate: 'June 1, 2026' }) }))
+        .success,
+    ).toBe(false);
+    expect(
+      ExtractionEnvelopeSchema.safeParse(makeEnvelope({ invoice: makeInvoice({ currency: '¥' }) })).success,
+    ).toBe(false);
   });
 });

@@ -25,9 +25,19 @@ export type LineItem = z.infer<typeof LineItemSchema>;
 export const InvoiceSchema = z.object({
   vendorName: z.string(),
   invoiceNumber: z.string(),
-  issueDate: z.string().describe('ISO 8601 date, e.g. 2026-06-22'),
-  dueDate: z.string().nullable().describe('ISO 8601 date, or null if not present'),
-  currency: z.string().describe('ISO 4217 code, e.g. JPY, USD'),
+  issueDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'must be an ISO 8601 date (YYYY-MM-DD)')
+    .describe('ISO 8601 date, e.g. 2026-06-22'),
+  dueDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'must be an ISO 8601 date (YYYY-MM-DD)')
+    .nullable()
+    .describe('ISO 8601 date, or null if not present'),
+  currency: z
+    .string()
+    .regex(/^[A-Z]{3}$/, 'must be an ISO 4217 code, e.g. JPY')
+    .describe('ISO 4217 code, e.g. JPY, USD'),
   lineItems: z.array(LineItemSchema),
   subtotal: z.number().nullable(),
   taxAmount: z.number().nullable(),

@@ -1,5 +1,5 @@
 import type { LoadedDocument } from '../domain/documents/document';
-import type { ExtractionEnvelope } from '../domain/documents/invoice';
+import { InvoiceSchema, type ExtractionEnvelope } from '../domain/documents/invoice';
 import type { ExtractionResult } from '../domain/extraction/result';
 import { buildFieldReviews, validateBusinessRules } from '../domain/extraction/validate';
 import { ValidationError } from '../domain/errors/errors';
@@ -61,7 +61,11 @@ export class ExtractDocumentService {
 
     const tolerance = options.tolerance ?? DEFAULT_TOLERANCE;
     const warnings = validateBusinessRules(envelope.invoice, tolerance);
-    const fields = buildFieldReviews(envelope.fieldConfidence, options.reviewThreshold);
+    const fields = buildFieldReviews(
+      envelope.fieldConfidence,
+      options.reviewThreshold,
+      Object.keys(InvoiceSchema.shape),
+    );
 
     const needsReview =
       warnings.length > 0 ||

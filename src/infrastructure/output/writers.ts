@@ -5,10 +5,20 @@ export function toJson(result: ExtractionResult): string {
   return JSON.stringify(result, null, 2);
 }
 
-/** Quote a CSV cell per RFC 4180 when it contains a comma, quote, or newline. */
+/**
+ * Render a CSV cell safely.
+ *
+ * Two concerns:
+ *  1. RFC 4180 quoting when the value contains a comma, quote, or newline.
+ *  2. CSV formula injection: extracted values are fully untrusted (they come
+ *     from a document an attacker may control). A cell starting with `= + - @`
+ *     or a tab/CR is treated as a formula by Excel/Sheets, so we prefix it with
+ *     a single quote to neutralise it before quoting.
+ */
 function csvCell(value: unknown): string {
-  const text = value === null || value === undefined ? '' : String(value);
-  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  const raw = value === null || value === undefined ? '' : String(value);
+  const guarded = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
+  return /[",\n]/.test(guarded) ? `"${guarded.replace(/"/g, '""')}"` : guarded;
 }
 
 /**

@@ -49,14 +49,21 @@ export function validateBusinessRules(invoice: Invoice, tolerance: number): stri
   return warnings;
 }
 
-/** Map the model's per-field confidence into review flags against a threshold. */
+/**
+ * Map the model's per-field confidence into review flags against a threshold.
+ *
+ * We iterate over `expectedFields` (the known invoice fields) rather than over
+ * whatever keys the model happened to return. A field the model forgot to score
+ * defaults to confidence 0 — so it is flagged for review instead of silently
+ * slipping through. This keeps the human-in-the-loop guarantee honest.
+ */
 export function buildFieldReviews(
   fieldConfidence: Record<string, number>,
   threshold: number,
+  expectedFields: readonly string[],
 ): FieldReview[] {
-  return Object.entries(fieldConfidence).map(([field, confidence]) => ({
-    field,
-    confidence,
-    needsReview: confidence < threshold,
-  }));
+  return expectedFields.map((field) => {
+    const confidence = fieldConfidence[field] ?? 0;
+    return { field, confidence, needsReview: confidence < threshold };
+  });
 }

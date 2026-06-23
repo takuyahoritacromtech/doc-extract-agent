@@ -46,4 +46,12 @@ describe('toCsv', () => {
     expect(csv).toContain('"Acme, ""Global"""');
     expect(csv).toContain('"A,B"');
   });
+
+  it('neutralises CSV formula injection from untrusted extracted values', () => {
+    const result = makeResult({
+      invoice: makeInvoice({ vendorName: '=HYPERLINK("http://evil","x")' }),
+    });
+    // The leading "=" is defused with a single quote so spreadsheets won't execute it.
+    expect(toCsv(result)).toContain("'=HYPERLINK");
+  });
 });

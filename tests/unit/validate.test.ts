@@ -37,11 +37,13 @@ describe('validateBusinessRules', () => {
 });
 
 describe('buildFieldReviews', () => {
-  it('marks fields below the threshold as needing review', () => {
-    const reviews = buildFieldReviews({ a: 0.9, b: 0.4 }, 0.75);
+  it('flags fields below the threshold and treats a missing score as 0', () => {
+    const reviews = buildFieldReviews({ a: 0.9, b: 0.4 }, 0.75, ['a', 'b', 'c']);
     expect(reviews).toEqual([
       { field: 'a', confidence: 0.9, needsReview: false },
       { field: 'b', confidence: 0.4, needsReview: true },
+      // 'c' was never scored by the model → defaults to 0 and is flagged.
+      { field: 'c', confidence: 0, needsReview: true },
     ]);
   });
 });
