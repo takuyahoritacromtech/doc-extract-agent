@@ -38,6 +38,9 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsx src/cli/index.ts",
+    "serve": "node dist/server.js",
+    "dev:serve": "tsx src/infrastructure/http/main.ts",
+    "demo": "tsx scripts/demo.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",

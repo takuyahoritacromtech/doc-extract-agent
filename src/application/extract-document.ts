@@ -45,8 +45,18 @@ export class ExtractDocumentService {
     },
   ) {}
 
+  /** Load a document from a path, then extract. Used by the CLI. */
   async run(filePath: string, options: ExtractOptions): Promise<ExtractionResult> {
     const document = await this.deps.fileLoader.load(filePath);
+    return this.runOnDocument(document, options);
+  }
+
+  /**
+   * Extract from an already-loaded document. Used by the HTTP API, where bytes
+   * arrive in the request rather than from the filesystem. Sharing this method
+   * keeps CLI and server behaviour identical.
+   */
+  async runOnDocument(document: LoadedDocument, options: ExtractOptions): Promise<ExtractionResult> {
     const envelope = await this.deps.extractor.extract(document);
 
     const tolerance = options.tolerance ?? DEFAULT_TOLERANCE;

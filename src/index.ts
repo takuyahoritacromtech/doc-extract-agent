@@ -40,6 +40,7 @@ export * from './infrastructure/files/file-loader';
 export * from './infrastructure/llm/anthropic-extractor';
 export * from './infrastructure/output/writers';
 export * from './infrastructure/logging/logger';
+export * from './infrastructure/http/server';
 
 // Config
 export { loadConfig, type AppConfig } from './config/config';

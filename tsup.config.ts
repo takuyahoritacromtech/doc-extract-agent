@@ -9,6 +9,7 @@ export default defineConfig({
   entry: {
     index: 'src/index.ts',
     'cli/index': 'src/cli/index.ts',
+    server: 'src/infrastructure/http/main.ts',
   },
   format: ['esm'],
   target: 'node18',

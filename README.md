@@ -9,7 +9,7 @@
 
 A self-hostable agent that reads a business document, extracts the fields you care about, **validates them**, and tells you **what a human should double-check**. The interesting part is not "call an LLM" — it is everything around it that makes an LLM safe to put in a pipeline: typed errors, retries with backoff, strict schema validation, and a human-in-the-loop-ready data model.
 
-> 🎥 **Demo:** _(GIF placeholder — `docs/demo.gif`)_ `doc-extract invoice.pdf --format csv`
+> 🎥 **Demo:** run `npm run demo` for an instant **no-API-key** sample, or see **[docs/DEMO.md](./docs/DEMO.md)** to record a GIF / run on a real invoice.
 
 ---
 
@@ -34,7 +34,7 @@ A self-hostable agent that reads a business document, extracts the fields you ca
 - 🛡️ **Typed errors with actionable hints** — branch on `error.code`, show `error.displayMessage`.
 - 🔁 **Retries with exponential backoff** for transient failures (429 / 5xx / timeouts); non-retryable errors (e.g. auth) fail fast.
 - 👀 **Human-in-the-loop ready** — per-field confidence + business-rule reconciliation flag exactly what to review.
-- 🔌 **Library or CLI** — embed `ExtractDocumentService`, or run `doc-extract`.
+- 🔌 **Library, CLI, or HTTP service** — embed `ExtractDocumentService`, run `doc-extract`, or self-host `POST /extract`.
 - 🐳 **Docker image**, non-root, multi-stage.
 - ✅ **Tested**: unit tests cover the happy path **and** every error branch.
 
@@ -106,6 +106,26 @@ if (result.needsReview) {
   console.warn('Review needed:', result.warnings, result.fields.filter((f) => f.needsReview));
 }
 ```
+
+### Run as an HTTP service
+
+```bash
+npm run build && npm run serve   # listens on $PORT (default 3000)
+```
+
+```bash
+# Health check
+curl -s localhost:3000/health        # {"status":"ok"}
+
+# Extract: send the document bytes base64-encoded
+curl -s localhost:3000/extract \
+  -H 'content-type: application/json' \
+  -d "{\"fileName\":\"invoice.png\",\"base64\":\"$(base64 -i invoice.png)\"}" | jq
+```
+
+The server is dependency-free (`node:http`), bounds the request body, validates input,
+and maps every domain error to the right status (e.g. `429` rate limit, `413` too large,
+`422` unparseable/validation) with a JSON `{ error: { code, message, hint } }` body.
 
 ## Error handling
 
@@ -188,7 +208,7 @@ files, and business-rule reconciliation (lenient and strict).
 ## Roadmap
 
 - [ ] Human-in-the-loop **review UI** (web) over the `needsReview` data model
-- [ ] HTTP API + webhook connector
+- [x] HTTP API (`POST /extract`) · [ ] webhook connector
 - [ ] More document types (receipts, purchase orders) via pluggable schemas
 - [ ] Optional **on-prem / local model** backend for data-residency-sensitive use
 
